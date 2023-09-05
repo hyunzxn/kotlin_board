@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/kotlin_board
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
