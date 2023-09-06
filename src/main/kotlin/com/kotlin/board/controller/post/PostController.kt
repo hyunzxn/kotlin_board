@@ -1,7 +1,11 @@
 package com.kotlin.board.controller.post
 
 import com.kotlin.board.request.post.PostCreateRequest
+import com.kotlin.board.response.post.PostResponse
 import com.kotlin.board.service.post.PostService
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,7 +18,17 @@ class PostController(
 ) {
 
     @PostMapping()
-    fun save(@RequestBody request: PostCreateRequest) {
-        postService.save(request)
+    fun save(@RequestBody request: PostCreateRequest): ResponseEntity<Unit> {
+        return ResponseEntity.ok().body(postService.save(request))
+    }
+
+    @GetMapping()
+    fun getList(): ResponseEntity<List<PostResponse>> {
+        return ResponseEntity.ok().body(postService.getList())
+    }
+
+    @GetMapping("/{id}")
+    fun getOne(@PathVariable id: Long): ResponseEntity<PostResponse> {
+        return ResponseEntity.ok().body(postService.getOne(id))
     }
 }
