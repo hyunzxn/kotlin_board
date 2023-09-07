@@ -1,12 +1,14 @@
 package com.kotlin.board.controller.post
 
 import com.kotlin.board.request.post.PostCreateRequest
+import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.response.post.PostResponse
 import com.kotlin.board.service.post.PostService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -30,5 +32,10 @@ class PostController(
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<PostResponse> {
         return ResponseEntity.ok().body(postService.getOne(id))
+    }
+
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: Long, @RequestBody request: PostUpdateRequest): ResponseEntity<PostResponse> {
+        return ResponseEntity.ok().body(postService.update(id, request))
     }
 }
