@@ -1,9 +1,12 @@
 package com.kotlin.board.service.post
 
+import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.post.PostType
 import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
+import org.assertj.core.groups.Tuple
+import org.assertj.core.groups.Tuple.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,5 +41,49 @@ class PostServiceTest @Autowired constructor(
         assertThat(results[0].title).isEqualTo("코틀린 잘하고 싶다.")
         assertThat(results[0].content).isEqualTo("그러면 공부 열심히 해야지!")
         assertThat(results[0].type).isEqualTo(PostType.FREE)
+    }
+
+    @Test
+    fun `게시글 전체 조회를 할 수 있다`() {
+        // given
+        postRepository.saveAll(
+            listOf(
+                Post.create("게시글1", "게시글1", PostType.FREE),
+                Post.create("게시글2", "게시글2", PostType.ASK),
+                Post.create("게시글3", "게시글3", PostType.NOTICE),
+            )
+        )
+
+        // when
+        val results = postService.getList()
+
+        // then
+        assertThat(results).hasSize(3)
+            .extracting("title", "content", "type")
+            .containsExactlyInAnyOrder(
+                tuple("게시글1", "게시글1", PostType.FREE),
+                tuple("게시글2", "게시글2", PostType.ASK),
+                tuple("게시글3", "게시글3", PostType.NOTICE)
+            )
+    }
+
+    @Test
+    fun `게시글 단건 조회를 할 수 있다`() {
+        // given
+        val posts = postRepository.saveAll(
+            listOf(
+                Post.create("게시글1", "게시글1", PostType.FREE),
+                Post.create("게시글2", "게시글2", PostType.ASK),
+                Post.create("게시글3", "게시글3", PostType.NOTICE),
+            )
+        )
+
+        // when
+        val result = postService.getOne(posts[0].id!!)
+
+        // then
+        assertThat(result.title).isEqualTo("게시글1")
+        assertThat(result.content).isEqualTo("게시글1")
+        assertThat(result.type).isEqualTo(PostType.FREE)
     }
 }
