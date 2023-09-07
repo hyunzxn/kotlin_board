@@ -32,7 +32,7 @@ class Post(
                 content = content,
                 type = type,
 
-            )
+                )
         }
     }
 }
