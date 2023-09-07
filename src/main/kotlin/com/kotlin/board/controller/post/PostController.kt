@@ -5,6 +5,7 @@ import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.response.post.PostResponse
 import com.kotlin.board.service.post.PostService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -37,5 +38,10 @@ class PostController(
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: PostUpdateRequest): ResponseEntity<PostResponse> {
         return ResponseEntity.ok().body(postService.update(id, request))
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: Long): ResponseEntity<Unit> {
+        return ResponseEntity.ok().body(postService.delete(id))
     }
 }

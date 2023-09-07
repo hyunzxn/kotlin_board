@@ -37,4 +37,10 @@ class PostService(
         post.update(request)
         return PostResponse.of(post)
     }
+
+    @Transactional
+    fun delete(id: Long) {
+        val post = postRepository.findByIdOrThrow(id, "존재하지 않는 게시글입니다.")
+        postRepository.delete(post)
+    }
 }
