@@ -27,20 +27,24 @@ class PostService(
     }
 
     fun getOne(id: Long): PostResponse {
-        val post = postRepository.findByIdOrThrow(id, "존재하지 않는 게시글입니다.")
+        val post = findByIdOrThrowException(id)
         return PostResponse.of(post)
     }
 
     @Transactional
     fun update(id: Long, request: PostUpdateRequest): PostResponse {
-        val post = postRepository.findByIdOrThrow(id, "존재하지 않는 게시글입니다.")
+        val post = findByIdOrThrowException(id)
         post.update(request)
         return PostResponse.of(post)
     }
 
     @Transactional
     fun delete(id: Long) {
-        val post = postRepository.findByIdOrThrow(id, "존재하지 않는 게시글입니다.")
+        val post = findByIdOrThrowException(id)
         postRepository.delete(post)
+    }
+
+    private fun findByIdOrThrowException(id: Long, message: String = "존재하지 않는 게시글입니다."): Post {
+        return postRepository.findByIdOrThrow(id, message)
     }
 }
