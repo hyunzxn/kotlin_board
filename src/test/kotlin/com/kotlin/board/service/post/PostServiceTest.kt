@@ -113,4 +113,19 @@ class PostServiceTest @Autowired constructor(
         assertThat(result.content).isEqualTo("수정 게시글 내용")
         assertThat(result.type).isEqualTo(PostType.NOTICE)
     }
+
+    @Test
+    fun `게시글을 삭제할 수 있다`() {
+        // given
+        val post = postRepository.save(
+            Post.create("게시글 제목", "게시글 내용", PostType.FREE)
+        )
+
+        // when
+        postService.delete(post.id!!)
+
+        // then
+        val results = postRepository.findAll()
+        assertThat(results).isEmpty()
+    }
 }
