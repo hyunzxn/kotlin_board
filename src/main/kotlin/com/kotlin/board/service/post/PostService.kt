@@ -32,7 +32,7 @@ class PostService(
     }
 
     @Transactional
-    fun update(id: Long, request: PostUpdateRequest): PostResponse? {
+    fun update(id: Long, request: PostUpdateRequest): PostResponse {
         val post = postRepository.findByIdOrThrow(id, "존재하지 않는 게시글입니다.")
         post.update(request)
         return PostResponse.of(post)

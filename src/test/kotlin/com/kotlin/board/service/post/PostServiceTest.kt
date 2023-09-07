@@ -4,6 +4,7 @@ import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.post.PostType
 import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.request.post.PostCreateRequest
+import com.kotlin.board.request.post.PostUpdateRequest
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.groups.Tuple
 import org.assertj.core.groups.Tuple.*
@@ -85,5 +86,31 @@ class PostServiceTest @Autowired constructor(
         assertThat(result.title).isEqualTo("게시글1")
         assertThat(result.content).isEqualTo("게시글1")
         assertThat(result.type).isEqualTo(PostType.FREE)
+    }
+
+    @Test
+    fun `게시글을 수정할 수 있다`() {
+        // given
+        val post = postRepository.save(
+            Post.create(
+                title = "게시글 제목",
+                content = "게시글 내용",
+                type = PostType.FREE
+            )
+        )
+
+        val request = PostUpdateRequest(
+            title = "수정 게시글 제목",
+            content = "수정 게시글 내용",
+            type = PostType.NOTICE
+        )
+
+        // when
+        val result = postService.update(post.id!!, request)
+
+        // then
+        assertThat(result.title).isEqualTo("수정 게시글 제목")
+        assertThat(result.content).isEqualTo("수정 게시글 내용")
+        assertThat(result.type).isEqualTo(PostType.NOTICE)
     }
 }
