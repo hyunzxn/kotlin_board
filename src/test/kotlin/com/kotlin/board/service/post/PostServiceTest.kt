@@ -5,6 +5,7 @@ import com.kotlin.board.domain.post.PostType
 import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
+import com.kotlin.board.util.PagingUtil
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.groups.Tuple.tuple
 import org.junit.jupiter.api.AfterEach
@@ -45,27 +46,24 @@ class PostServiceTest @Autowired constructor(
     }
 
     @Test
-    fun `게시글 전체 조회를 할 수 있다`() {
+    fun `게시글 전체 조회 시 페이징 처리가 돼서 조회할 수 있다`() {
         // given
-        postRepository.saveAll(
-            listOf(
-                Post.create("게시글1", "게시글1", PostType.FREE),
-                Post.create("게시글2", "게시글2", PostType.ASK),
-                Post.create("게시글3", "게시글3", PostType.NOTICE),
-            )
-        )
+        val posts = mutableListOf<Post>()
+        (1..20).map {
+            val post = Post.create("게시글 제목 $it", "게시글 내용 $it", PostType.FREE)
+            posts.add(post)
+        }
+        postRepository.saveAll(posts)
+
+        val pagingUtil = PagingUtil()
 
         // when
-        val results = postService.getList()
+        val results = postService.getListWithPaging(pagingUtil)
 
         // then
-        assertThat(results).hasSize(3)
-            .extracting("title", "content", "type")
-            .containsExactlyInAnyOrder(
-                tuple("게시글1", "게시글1", PostType.FREE),
-                tuple("게시글2", "게시글2", PostType.ASK),
-                tuple("게시글3", "게시글3", PostType.NOTICE)
-            )
+       assertThat(results).hasSize(10)
+       assertThat(results[0].title).isEqualTo("게시글 제목 1")
+       assertThat(results[9].title).isEqualTo("게시글 제목 10")
     }
 
     @Test
