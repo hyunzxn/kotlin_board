@@ -22,11 +22,6 @@ class PostService(
         postRepository.save(post)
     }
 
-    fun getList(): List<PostResponse> {
-        return postRepository.findAll()
-            .map { post -> PostResponse.of(post) }
-    }
-
     fun getListWithPaging(pagingUtil: PagingUtil): List<PostResponse> {
         return postRepository.getListWithPaging(pagingUtil)
             .map { post -> PostResponse.of(post) }
