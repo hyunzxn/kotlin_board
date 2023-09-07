@@ -5,6 +5,7 @@ import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.response.post.PostResponse
+import com.kotlin.board.util.PagingUtil
 import com.kotlin.board.util.findByIdOrThrow
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,6 +24,11 @@ class PostService(
 
     fun getList(): List<PostResponse> {
         return postRepository.findAll()
+            .map { post -> PostResponse.of(post) }
+    }
+
+    fun getListWithPaging(pagingUtil: PagingUtil): List<PostResponse> {
+        return postRepository.getListWithPaging(pagingUtil)
             .map { post -> PostResponse.of(post) }
     }
 

@@ -4,6 +4,7 @@ import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.response.post.PostResponse
 import com.kotlin.board.service.post.PostService
+import com.kotlin.board.util.PagingUtil
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,9 +26,9 @@ class PostController(
         return ResponseEntity.ok().body(postService.save(request))
     }
 
-    @GetMapping()
-    fun getList(): ResponseEntity<List<PostResponse>> {
-        return ResponseEntity.ok().body(postService.getList())
+    @GetMapping
+    fun getListWithPaging(pagingUtil: PagingUtil): ResponseEntity<List<PostResponse>> {
+        return ResponseEntity.ok().body(postService.getListWithPaging(pagingUtil))
     }
 
     @GetMapping("/{id}")
