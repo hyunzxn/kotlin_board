@@ -5,10 +5,8 @@ import com.kotlin.board.domain.post.PostType
 import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
-import com.kotlin.board.response.post.PostResponse
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
-import org.assertj.core.groups.Tuple
-import org.assertj.core.groups.Tuple.*
+import org.assertj.core.groups.Tuple.tuple
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -93,13 +91,10 @@ class PostServiceTest @Autowired constructor(
     @Test
     fun `존재하지 않는 게시글을 조회할 수 없다`() {
         // given
-        val post = postRepository.save(
-            Post.create("게시글 제목", "게시글 내용", PostType.NOTICE)
-        )
 
         // when, then
         assertThrows<IllegalArgumentException> {
-            postService.getOne(2L)
+            postService.getOne(100L)
         }
     }
 
@@ -107,11 +102,7 @@ class PostServiceTest @Autowired constructor(
     fun `게시글을 수정할 수 있다`() {
         // given
         val post = postRepository.save(
-            Post.create(
-                title = "게시글 제목",
-                content = "게시글 내용",
-                type = PostType.FREE
-            )
+            Post.create("게시글 제목", "게시글 내용", PostType.FREE)
         )
 
         val request = PostUpdateRequest(
