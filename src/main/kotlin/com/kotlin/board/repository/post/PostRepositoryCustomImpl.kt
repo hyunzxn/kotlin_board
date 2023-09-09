@@ -15,6 +15,7 @@ class PostRepositoryCustomImpl(
             .from(post)
             .limit(pagingUtil.size.toLong())
             .offset(pagingUtil.getOffset())
+            .orderBy(post.id.desc())
             .fetch()
     }
 }

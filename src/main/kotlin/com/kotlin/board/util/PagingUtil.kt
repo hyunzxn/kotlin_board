@@ -1,12 +1,13 @@
 package com.kotlin.board.util
 
+import org.springframework.data.domain.Sort
 import kotlin.math.max
 import kotlin.math.min
 
 class PagingUtil(
-    val page: Int = 1,
+    private val page: Int = 1,
     val size: Int = 10,
-    var sort: String = "DESC"
+    var sort: Sort.Direction = Sort.Direction.DESC
 ) {
 
     fun getOffset(): Long {
