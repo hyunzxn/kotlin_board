@@ -16,7 +16,7 @@ class PostRepositoryCustomImpl(
             .select(post)
             .distinct()
             .from(post)
-            .leftJoin(post.comments, comment).fetchJoin()
+            .leftJoin(post.comments).fetchJoin()
             .limit(pagingUtil.size.toLong())
             .offset(pagingUtil.getOffset())
             .orderBy(post.id.desc())
