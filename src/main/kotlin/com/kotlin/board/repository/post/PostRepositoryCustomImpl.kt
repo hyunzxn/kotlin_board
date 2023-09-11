@@ -1,5 +1,7 @@
 package com.kotlin.board.repository.post
 
+import com.kotlin.board.domain.comment.QComment
+import com.kotlin.board.domain.comment.QComment.*
 import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.post.QPost.post
 import com.kotlin.board.util.PagingUtil
@@ -12,7 +14,9 @@ class PostRepositoryCustomImpl(
     override fun getListWithPaging(pagingUtil: PagingUtil): List<Post> {
         return queryFactory
             .select(post)
+            .distinct()
             .from(post)
+            .leftJoin(post.comments, comment).fetchJoin()
             .limit(pagingUtil.size.toLong())
             .offset(pagingUtil.getOffset())
             .orderBy(post.id.desc())
