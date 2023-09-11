@@ -7,7 +7,6 @@ import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.util.PagingUtil
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
-import org.assertj.core.groups.Tuple.tuple
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -61,9 +60,9 @@ class PostServiceTest @Autowired constructor(
         val results = postService.getListWithPaging(pagingUtil)
 
         // then
-       assertThat(results).hasSize(10)
-       assertThat(results[0].title).isEqualTo("게시글 제목 1")
-       assertThat(results[9].title).isEqualTo("게시글 제목 10")
+        assertThat(results).hasSize(10)
+        assertThat(results[0].title).isEqualTo("게시글 제목 20")
+        assertThat(results[9].title).isEqualTo("게시글 제목 11")
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.kotlin.board.domain.post
 
+import com.kotlin.board.domain.comment.Comment
 import com.kotlin.board.request.post.PostUpdateRequest
 import jakarta.persistence.*
 
@@ -13,6 +14,9 @@ class Post(
 
     @Enumerated(EnumType.STRING)
     var type: PostType,
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val comments: MutableList<Comment> = mutableListOf(),
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
