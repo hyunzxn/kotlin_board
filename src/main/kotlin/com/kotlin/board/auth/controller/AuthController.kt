@@ -1,4 +1,4 @@
-package com.kotlin.board.controller.auth
+package com.kotlin.board.auth.controller
 
 import com.kotlin.board.request.auth.SignupRequest
 import com.kotlin.board.service.auth.AuthService
