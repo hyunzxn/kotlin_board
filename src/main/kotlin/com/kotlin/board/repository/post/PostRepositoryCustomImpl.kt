@@ -1,7 +1,5 @@
 package com.kotlin.board.repository.post
 
-import com.kotlin.board.domain.comment.QComment
-import com.kotlin.board.domain.comment.QComment.*
 import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.post.QPost.post
 import com.kotlin.board.util.PagingUtil

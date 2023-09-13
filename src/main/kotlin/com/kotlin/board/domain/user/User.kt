@@ -4,7 +4,8 @@ import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
-@Table(name = "USERS",
+@Table(
+    name = "USERS",
     uniqueConstraints = [UniqueConstraint(name = "uk_user_login_id", columnNames = ["loginId"])]
 )
 class User(
@@ -33,4 +34,7 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 ) {
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    val userRole: List<UserRole>? = null
 }
