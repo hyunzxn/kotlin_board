@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
-import java.lang.RuntimeException
 import java.util.*
 
 const val EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 30
@@ -75,7 +74,7 @@ class JwtTokenProvider {
                 is IllegalArgumentException -> {}
                 else -> {}  // else
             }
-           log.info(e.message)
+            log.info(e.message)
         }
         return false
     }
