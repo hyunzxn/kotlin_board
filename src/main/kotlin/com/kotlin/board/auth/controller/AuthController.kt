@@ -1,5 +1,7 @@
 package com.kotlin.board.auth.controller
 
+import com.kotlin.board.auth.TokenInfo
+import com.kotlin.board.request.auth.LoginRequest
 import com.kotlin.board.request.auth.SignupRequest
 import com.kotlin.board.service.auth.AuthService
 import jakarta.validation.Valid
@@ -18,5 +20,10 @@ class AuthController(
     @PostMapping("/signup")
     fun signup(@RequestBody @Valid request: SignupRequest): ResponseEntity<String> {
         return ResponseEntity.ok().body(authService.signup(request))
+    }
+
+    @PostMapping("/login")
+    fun login(@RequestBody @Valid request: LoginRequest): ResponseEntity<TokenInfo> {
+        return ResponseEntity.ok().body(authService.login(request))
     }
 }

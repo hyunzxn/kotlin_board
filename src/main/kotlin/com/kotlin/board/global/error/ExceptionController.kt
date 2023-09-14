@@ -3,6 +3,8 @@ package com.kotlin.board.global.error
 import com.kotlin.board.response.ErrorResponse
 import com.kotlin.board.util.logger
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -42,5 +44,16 @@ class ExceptionController {
 
         return ResponseEntity.badRequest().body(errorResponse)
 
+    }
+
+    @ExceptionHandler(value = [BadCredentialsException::class])
+    fun handlingUserNameNotFoundException(e: BadCredentialsException): ResponseEntity<ErrorResponse> {
+        log.error(e.message, e)
+        val errorResponse = ErrorResponse(
+            statusCode = 400,
+            errorCode = ErrorCode.BAD_REQUEST,
+            message = "아이디 또는 비밀번호를 다시 확인해주세요.",
+        )
+        return ResponseEntity.badRequest().body(errorResponse)
     }
 }
