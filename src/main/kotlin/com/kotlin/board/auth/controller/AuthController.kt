@@ -3,7 +3,7 @@ package com.kotlin.board.auth.controller
 import com.kotlin.board.auth.TokenInfo
 import com.kotlin.board.request.auth.LoginRequest
 import com.kotlin.board.request.auth.SignupRequest
-import com.kotlin.board.service.auth.AuthService
+import com.kotlin.board.auth.service.AuthService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

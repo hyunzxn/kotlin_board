@@ -1,4 +1,4 @@
-package com.kotlin.board.service.auth
+package com.kotlin.board.auth.service
 
 import com.kotlin.board.auth.TokenInfo
 import com.kotlin.board.auth.jwt.JwtTokenProvider

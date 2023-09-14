@@ -1,4 +1,4 @@
-package com.kotlin.board.auth
+package com.kotlin.board.auth.service
 
 import com.kotlin.board.domain.user.User
 import com.kotlin.board.repository.user.UserRepository
