@@ -1,7 +1,9 @@
 package com.kotlin.board.domain.user
 
+import com.kotlin.board.response.user.UserResponse
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Entity
 @Table(
@@ -37,4 +39,12 @@ class User(
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     val userRole: List<UserRole>? = null
+
+    fun toDto(): UserResponse {
+        return UserResponse(id!!, loginId, name, birthDate.formatDateToString(), gender.desc, email)
+    }
+
+    private fun LocalDate.formatDateToString(): String {
+        return this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+    }
 }
