@@ -11,6 +11,7 @@ import com.kotlin.board.request.auth.LoginRequest
 import com.kotlin.board.request.auth.SignupRequest
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,6 +22,7 @@ class AuthService(
     private val userRoleRepository: UserRoleRepository,
     private val authenticationManagerBuilder: AuthenticationManagerBuilder,
     private val jwtTokenProvider: JwtTokenProvider,
+    private val passwordEncoder: PasswordEncoder,
 ) {
 
     @Transactional
@@ -31,10 +33,11 @@ class AuthService(
         }
 
         user = request.toEntity()
+        user.encodePassword(passwordEncoder)
 
         userRepository.save(user)
 
-        val userRole: UserRole = UserRole(ROLE.MEMBER, user, null)
+        val userRole = UserRole(ROLE.MEMBER, user, null)
         userRoleRepository.save(userRole)
 
         return "회원가입이 완료되었습니다."

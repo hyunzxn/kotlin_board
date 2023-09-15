@@ -2,6 +2,7 @@ package com.kotlin.board.domain.user
 
 import com.kotlin.board.response.user.UserResponse
 import jakarta.persistence.*
+import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -16,7 +17,7 @@ class User(
     val loginId: String,
 
     @Column(nullable = false, length = 100)
-    val password: String,
+    var password: String,
 
     @Column(nullable = false, length = 10)
     val name: String,
@@ -42,6 +43,10 @@ class User(
 
     fun toDto(): UserResponse {
         return UserResponse(id!!, loginId, name, birthDate.formatDateToString(), gender.desc, email)
+    }
+
+    fun encodePassword(passwordEncoder: PasswordEncoder) {
+        this.password = passwordEncoder.encode(this.password)
     }
 
     private fun LocalDate.formatDateToString(): String {
