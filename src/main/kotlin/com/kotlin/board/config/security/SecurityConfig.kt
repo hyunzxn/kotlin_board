@@ -1,7 +1,10 @@
 package com.kotlin.board.config.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.kotlin.board.auth.jwt.JwtAuthenticationFilter
 import com.kotlin.board.auth.jwt.JwtTokenProvider
+import com.kotlin.board.config.security.handler.Http401Handler
+import com.kotlin.board.config.security.handler.Http403Handler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -16,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtTokenProvider: JwtTokenProvider,
+    private val objectMapper: ObjectMapper,
 ) {
 
     @Bean
@@ -33,6 +37,10 @@ class SecurityConfig(
                 JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter::class.java
             )
+            .exceptionHandling {
+                it.authenticationEntryPoint(Http401Handler(objectMapper))
+                it.accessDeniedHandler(Http403Handler(objectMapper))
+            }
             .build()
     }
 
