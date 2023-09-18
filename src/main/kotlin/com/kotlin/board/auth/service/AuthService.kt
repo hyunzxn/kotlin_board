@@ -48,13 +48,17 @@ class AuthService(
     fun login(request: LoginRequest): TokenInfo {
         val loginUser = userRepository.findByLoginId(request.loginId) //todo 만약 유저 자체가 없어서 loginUser가 null이면?
 
-        if (!passwordEncoder.matches(request.password, loginUser?.password)) {
-            throw IllegalArgumentException("비밀번호를 다시 확인해주세요.")
+        if (!isLoginValidated(request, loginUser)) {
+            throw IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다. 아이디 또는 비밀번호를 다시 확인해주세요.")
         }
 
         val authenticationToken = UsernamePasswordAuthenticationToken(request.loginId, loginUser?.password)
         val authentication = authenticationManagerBuilder.`object`.authenticate(authenticationToken)
 
         return jwtTokenProvider.createToken(authentication)
+    }
+
+    private fun isLoginValidated(request: LoginRequest, user: User?): Boolean {
+        return request.loginId == user?.loginId && passwordEncoder.matches(request.password, user.password)
     }
 }
