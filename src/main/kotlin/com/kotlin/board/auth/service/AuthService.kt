@@ -9,6 +9,7 @@ import com.kotlin.board.repository.user.UserRepository
 import com.kotlin.board.repository.user.UserRoleRepository
 import com.kotlin.board.request.auth.LoginRequest
 import com.kotlin.board.request.auth.SignupRequest
+import com.kotlin.board.util.findByIdOrThrow
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -45,7 +46,13 @@ class AuthService(
 
     @Transactional
     fun login(request: LoginRequest): TokenInfo {
-        val authenticationToken = UsernamePasswordAuthenticationToken(request.loginId, request.password)
+        val loginUser = userRepository.findByLoginId(request.loginId) //todo 만약 유저 자체가 없어서 loginUser가 null이면?
+
+        if (!passwordEncoder.matches(request.password, loginUser?.password)) {
+            throw IllegalArgumentException("비밀번호를 다시 확인해주세요.")
+        }
+
+        val authenticationToken = UsernamePasswordAuthenticationToken(request.loginId, loginUser?.password)
         val authentication = authenticationManagerBuilder.`object`.authenticate(authenticationToken)
 
         return jwtTokenProvider.createToken(authentication)
