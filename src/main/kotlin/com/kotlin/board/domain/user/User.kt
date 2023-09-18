@@ -52,4 +52,17 @@ class User(
     private fun LocalDate.formatDateToString(): String {
         return this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
     }
+
+    companion object {
+        fun create(loginId: String, password: String, birthDate: LocalDate, gender: Gender, name: String, email: String): User {
+            return User(
+                loginId = loginId,
+                password = password,
+                birthDate = birthDate,
+                gender = gender,
+                name = name,
+                email = email
+            )
+        }
+    }
 }

@@ -2,26 +2,48 @@ package com.kotlin.board.service.post
 
 import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.post.PostType
+import com.kotlin.board.domain.user.Gender
+import com.kotlin.board.domain.user.User
 import com.kotlin.board.repository.post.PostRepository
+import com.kotlin.board.repository.user.UserRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.util.PagingUtil
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.time.LocalDate
 
 @SpringBootTest
 class PostServiceTest @Autowired constructor(
     val postService: PostService,
     val postRepository: PostRepository,
+    val userRepository: UserRepository,
 ) {
+
+    private lateinit var user: User
+
+    @BeforeEach
+    fun setUp() {
+        user = User.create(
+            loginId = "hyuzxn",
+            password = "1234qwer!!",
+            birthDate = LocalDate.of(1994, 9, 7),
+            gender = Gender.MALE,
+            name = "문현준",
+            email = "jann1653@gmail.com"
+        )
+        userRepository.save(user)
+    }
 
     @AfterEach
     fun tearDown() {
         postRepository.deleteAllInBatch()
+        userRepository.deleteAllInBatch()
     }
 
     @Test
@@ -34,7 +56,7 @@ class PostServiceTest @Autowired constructor(
         )
 
         // when
-        postService.save(request)
+        postService.save(request, user.id!!)
 
         // then
         val results = postRepository.findAll()
@@ -49,7 +71,7 @@ class PostServiceTest @Autowired constructor(
         // given
         val posts = mutableListOf<Post>()
         (1..20).map {
-            val post = Post.create("게시글 제목 $it", "게시글 내용 $it", PostType.FREE)
+            val post = Post.create("게시글 제목 $it", "게시글 내용 $it", PostType.FREE, user)
             posts.add(post)
         }
         postRepository.saveAll(posts)
@@ -70,9 +92,9 @@ class PostServiceTest @Autowired constructor(
         // given
         val posts = postRepository.saveAll(
             listOf(
-                Post.create("게시글1", "게시글1", PostType.FREE),
-                Post.create("게시글2", "게시글2", PostType.ASK),
-                Post.create("게시글3", "게시글3", PostType.NOTICE),
+                Post.create("게시글1", "게시글1", PostType.FREE, user),
+                Post.create("게시글2", "게시글2", PostType.ASK, user),
+                Post.create("게시글3", "게시글3", PostType.NOTICE, user),
             )
         )
 
@@ -99,7 +121,7 @@ class PostServiceTest @Autowired constructor(
     fun `게시글을 수정할 수 있다`() {
         // given
         val post = postRepository.save(
-            Post.create("게시글 제목", "게시글 내용", PostType.FREE)
+            Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
         )
 
         val request = PostUpdateRequest(
@@ -121,7 +143,7 @@ class PostServiceTest @Autowired constructor(
     fun `게시글을 삭제할 수 있다`() {
         // given
         val post = postRepository.save(
-            Post.create("게시글 제목", "게시글 내용", PostType.FREE)
+            Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
         )
 
         // when
