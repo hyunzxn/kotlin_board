@@ -46,7 +46,7 @@ class AuthService(
 
     @Transactional
     fun login(request: LoginRequest): TokenInfo {
-        val loginUser = userRepository.findByLoginId(request.loginId) //todo 만약 유저 자체가 없어서 loginUser가 null이면?
+        val loginUser = userRepository.findByLoginId(request.loginId)
 
         if (!isLoginValidated(request, loginUser)) {
             throw IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다. 아이디 또는 비밀번호를 다시 확인해주세요.")
