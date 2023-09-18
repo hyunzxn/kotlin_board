@@ -2,6 +2,7 @@ package com.kotlin.board.service.post
 
 import com.kotlin.board.domain.post.Post
 import com.kotlin.board.repository.post.PostRepository
+import com.kotlin.board.repository.user.UserRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.response.post.PostResponse
@@ -14,11 +15,13 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class PostService(
     private val postRepository: PostRepository,
+    private val userRepository: UserRepository,
 ) {
 
     @Transactional
-    fun save(request: PostCreateRequest) {
-        val post = Post.create(request.title, request.content, request.type)
+    fun save(request: PostCreateRequest, userId: Long) {
+        val user = userRepository.findByIdOrThrow(userId, "존재하지 않는 유저입니다.")
+        val post = Post.create(request.title, request.content, request.type, user)
         postRepository.save(post)
     }
 
