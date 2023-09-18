@@ -9,11 +9,11 @@ class Comment(
     var content: String,
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn(foreignKey = ForeignKey(name = "fk_comment_post_id"))
     val post: Post,
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(foreignKey = ForeignKey(name = "fk_comment_user_id"))
     val user: User,
 
     @Id

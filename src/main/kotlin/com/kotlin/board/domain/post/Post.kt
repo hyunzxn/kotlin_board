@@ -20,7 +20,7 @@ class Post(
     val comments: MutableList<Comment> = mutableListOf(),
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(foreignKey = ForeignKey(name = "fk_post_user_id"))
     val user: User,
 
     @Id
