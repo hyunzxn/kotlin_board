@@ -34,6 +34,11 @@ class PostController(
         return ResponseEntity.ok().body(postService.getOne(id))
     }
 
+    @GetMapping("/search")
+    fun getBySearchKeyword(@RequestParam keyword: String): ResponseEntity<List<PostResponse>> {
+        return ResponseEntity.ok().body(postService.getBySearchKeyword(keyword))
+    }
+
     @PreAuthorize("isAuthenticated() && hasPermission(#id, 'Post', 'PUT')")
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: PostUpdateRequest): ResponseEntity<PostResponse> {

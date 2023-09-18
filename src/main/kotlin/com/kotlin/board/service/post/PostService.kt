@@ -20,7 +20,7 @@ class PostService(
 
     @Transactional
     fun save(request: PostCreateRequest, userId: Long) {
-        val user = userRepository.findByIdOrThrow(userId, "존재하지 않는 유저입니다.")
+        val user = userRepository.findByIdOrThrow(userId, "존재하지 않는 유저입니다.") //todo 예외 메시지 수정 필요
         val post = Post.create(request.title, request.content, request.type, user)
         postRepository.save(post)
     }
@@ -33,6 +33,11 @@ class PostService(
     fun getOne(id: Long): PostResponse {
         val post = findByIdOrThrowException(id)
         return PostResponse.of(post)
+    }
+
+    fun getBySearchKeyword(keyword: String): List<PostResponse> {
+        return postRepository.getBySearchKeyword(keyword)
+            .map { post -> PostResponse.of(post) }
     }
 
     @Transactional
