@@ -20,8 +20,15 @@ class PostController(
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     fun save(@RequestBody request: PostCreateRequest): ResponseEntity<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+        val userId: Long = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
         return ResponseEntity.ok().body(postService.save(request, userId))
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/likes/{postId}")
+    fun postLike(@PathVariable postId: Long): ResponseEntity<Unit> {
+        val userId: Long = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+        return ResponseEntity.ok().body(postService.postLike(userId, postId))
     }
 
     @GetMapping

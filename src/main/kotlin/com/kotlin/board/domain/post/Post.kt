@@ -16,6 +16,8 @@ class Post(
     @Enumerated(EnumType.STRING)
     var type: PostType,
 
+    var likeCount: Int = 0,
+
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val comments: MutableList<Comment> = mutableListOf(),
 
