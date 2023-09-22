@@ -18,4 +18,13 @@ class CommentRepositoryCustomImpl(
             .orderBy(comment.id.desc())
             .fetch()
     }
+
+    override fun getReComments(parentCommetId: Long): List<Comment> {
+        return queryFactory
+            .select(comment)
+            .from(comment)
+            .where(comment.parent.id.eq(parentCommetId))
+            .orderBy(comment.id.desc())
+            .fetch()
+    }
 }

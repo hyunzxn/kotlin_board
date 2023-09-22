@@ -6,4 +6,6 @@ import com.kotlin.board.util.PagingUtil
 interface CommentRepositoryCustom {
 
     fun getListWithPaging(pagingUtil: PagingUtil): List<Comment>
+
+    fun getReComments(parentCommetId: Long): List<Comment>
 }

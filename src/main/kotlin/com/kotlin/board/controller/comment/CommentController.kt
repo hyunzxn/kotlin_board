@@ -23,6 +23,13 @@ class CommentController(
         return ResponseEntity.ok().body(commentService.save(request, userId))
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/reply/{parentId}")
+    fun saveReComment(@RequestBody request: CommentCreateRequest, @PathVariable parentId: Long): ResponseEntity<Unit> {
+        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+        return ResponseEntity.ok().body(commentService.saveReComment(parentId, userId, request))
+    }
+
     @GetMapping
     fun getList(pagingUtil: PagingUtil): ResponseEntity<List<CommentResponse>> {
         return ResponseEntity.ok().body(commentService.getList(pagingUtil))

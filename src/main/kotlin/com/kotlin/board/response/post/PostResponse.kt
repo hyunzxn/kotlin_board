@@ -6,6 +6,7 @@ import com.kotlin.board.response.comment.CommentResponse
 
 data class PostResponse(
     val id: Long,
+    val writer: String,
     val title: String,
     val content: String,
     val type: PostType,
@@ -16,10 +17,12 @@ data class PostResponse(
         fun of(post: Post): PostResponse {
             return PostResponse(
                 id = post.id!!,
+                writer = post.user.loginId,
                 title = post.title,
                 content = post.content,
                 type = post.type,
-                comments = post.comments.map { comment -> CommentResponse.of(comment) }
+                comments = post.comments.filter { comment -> comment.parent == null }
+                    .map { comment -> CommentResponse.of(comment) }
             )
         }
     }

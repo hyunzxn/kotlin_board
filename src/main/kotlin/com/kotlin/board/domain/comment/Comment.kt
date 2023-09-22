@@ -16,16 +16,32 @@ class Comment(
     @JoinColumn(foreignKey = ForeignKey(name = "fk_comment_user_id"))
     val user: User,
 
+    @ManyToOne
+    @JoinColumn(foreignKey = ForeignKey(name = "fk_parent_comment_id"))
+    var parent: Comment? = null,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 ) {
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val children: MutableList<Comment> = mutableListOf()
 
     companion object {
         fun create(content: String = "댓글 내용", post: Post, user: User): Comment {
             return Comment(
                 content = content,
                 post = post,
+                user = user
+            )
+        }
+
+        fun createReComment(content: String, post: Post, parent: Comment, user: User): Comment {
+            return Comment(
+                content = content,
+                post = post,
+                parent = parent,
                 user = user
             )
         }

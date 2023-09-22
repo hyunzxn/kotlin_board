@@ -27,6 +27,17 @@ class CommentService(
         commentRepository.save(comment)
     }
 
+    @Transactional
+    fun saveReComment(parentId: Long, userId: Long, request: CommentCreateRequest) {
+        val user = userRepository.findByIdOrThrow(userId, "존재하지 않는 유저입니다.")
+        val post = postRepository.findByIdOrThrow(request.postId, "존재하지 않는 게시글입니다.")
+        val parentComment = commentRepository.findByIdOrThrow(parentId, "존재하지 않는 댓글입니다. 요청한 댓글 아이디=$parentId")
+
+        val reComment = Comment.createReComment(request.content, post, parentComment, user)
+        parentComment.children.add(reComment)
+        commentRepository.save(reComment)
+    }
+
     fun getList(pagingUtil: PagingUtil): List<CommentResponse> {
         return commentRepository.getListWithPaging(pagingUtil)
             .map { comment -> CommentResponse.of(comment) }
