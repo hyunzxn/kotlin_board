@@ -15,7 +15,7 @@ data class CommentResponse(
                 id = comment.id!!,
                 writer = comment.user.loginId,
                 content = comment.content,
-                reComments = comment.children.map { reComment -> CommentResponse.of(reComment) }
+                reComments = comment.children.map { reComment -> this.of(reComment) }
             )
         }
     }

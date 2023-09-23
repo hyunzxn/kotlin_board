@@ -40,6 +40,7 @@ class CommentService(
 
     fun getList(pagingUtil: PagingUtil): List<CommentResponse> {
         return commentRepository.getListWithPaging(pagingUtil)
+            .filter { comment -> comment.parent == null }
             .map { comment -> CommentResponse.of(comment) }
     }
 

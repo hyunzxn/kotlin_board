@@ -10,7 +10,6 @@ data class PostResponse(
     val title: String,
     val content: String,
     val type: PostType,
-    val comments: List<CommentResponse>,
 ) {
 
     companion object {
@@ -20,9 +19,7 @@ data class PostResponse(
                 writer = post.user.loginId,
                 title = post.title,
                 content = post.content,
-                type = post.type,
-                comments = post.comments.filter { comment -> comment.parent == null }
-                    .map { comment -> CommentResponse.of(comment) }
+                type = post.type
             )
         }
     }
