@@ -1,6 +1,8 @@
 package com.kotlin.board.domain.user
 
+import com.kotlin.board.request.user.UserUpdateRequest
 import com.kotlin.board.response.user.UserResponse
+import com.kotlin.board.util.formatDateToString
 import jakarta.persistence.*
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDate
@@ -14,13 +16,13 @@ import java.time.format.DateTimeFormatter
 class User(
 
     @Column(nullable = false, length = 30, updatable = false)
-    val loginId: String,
+    var loginId: String,
 
     @Column(nullable = false, length = 100)
     var password: String,
 
     @Column(nullable = false, length = 10)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
@@ -31,7 +33,7 @@ class User(
     val gender: Gender,
 
     @Column(nullable = false, length = 30)
-    val email: String,
+    var email: String,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +51,10 @@ class User(
         this.password = passwordEncoder.encode(this.password)
     }
 
-    private fun LocalDate.formatDateToString(): String {
-        return this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+    fun updateInfo(request: UserUpdateRequest, passwordEncoder: PasswordEncoder) {
+        this.password = passwordEncoder.encode(request.password)
+        this.name = request.name
+        this.email = request.email
     }
 
     companion object {
