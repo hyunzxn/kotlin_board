@@ -8,15 +8,15 @@ import jakarta.persistence.*
 class Comment(
     var content: String,
 
-    @ManyToOne
-    @JoinColumn(foreignKey = ForeignKey(name = "fk_comment_post_id"))
-    val post: Post,
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_comment_user_id"))
     val user: User,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = ForeignKey(name = "fk_comment_post_id"))
+    var post: Post? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "fk_parent_comment_id"))
     var parent: Comment? = null,
 
@@ -29,18 +29,16 @@ class Comment(
     val children: MutableList<Comment> = mutableListOf()
 
     companion object {
-        fun create(content: String = "댓글 내용", post: Post, user: User): Comment {
+        fun create(content: String = "댓글 내용", user: User): Comment {
             return Comment(
                 content = content,
-                post = post,
                 user = user
             )
         }
 
-        fun createReComment(content: String, post: Post, parent: Comment, user: User): Comment {
+        fun createReComment(content: String, parent: Comment, user: User): Comment {
             return Comment(
                 content = content,
-                post = post,
                 parent = parent,
                 user = user
             )

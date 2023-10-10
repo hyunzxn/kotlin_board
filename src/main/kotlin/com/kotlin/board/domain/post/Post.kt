@@ -18,9 +18,6 @@ class Post(
 
     var likeCount: Int = 0,
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    val comments: MutableList<Comment> = mutableListOf(),
-
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_post_user_id"))
     val user: User,
@@ -29,6 +26,14 @@ class Post(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 ) {
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val comments: MutableList<Comment> = mutableListOf()
+
+    fun addComment(comment: Comment) {
+        comment.post = this
+        this.comments.add(comment)
+    }
 
     fun update(request: PostUpdateRequest) {
         this.title = request.title

@@ -10,12 +10,16 @@ import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.repository.user.UserRepository
 import com.kotlin.board.request.comment.CommentCreateRequest
 import com.kotlin.board.util.PagingUtil
+import com.kotlin.board.util.findByIdOrThrow
+import jakarta.persistence.EntityManager
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @SpringBootTest
@@ -43,9 +47,9 @@ class CommentServiceTest @Autowired constructor(
 
     @AfterEach
     fun tearDown() {
-        commentRepository.deleteAllInBatch()
-        postRepository.deleteAllInBatch()
-        userRepository.deleteAllInBatch()
+        commentRepository.deleteAll()
+        postRepository.deleteAll()
+        userRepository.deleteAll()
     }
 
     @Test
@@ -73,7 +77,8 @@ class CommentServiceTest @Autowired constructor(
 
         val comments = mutableListOf<Comment>()
         (1..20).map {
-            val comment = Comment.create("댓글 내용 $it", post, user)
+            val comment = Comment.create("댓글 내용 $it", user)
+            comment.post = post
             comments.add(comment)
         }
         commentRepository.saveAll(comments)
@@ -95,7 +100,8 @@ class CommentServiceTest @Autowired constructor(
         val post = Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
         postRepository.save(post)
 
-        val comment = Comment.create("댓글 댓글", post, user)
+        val comment = Comment.create("댓글 댓글", user)
+        comment.post = post
         commentRepository.save(comment)
 
         // when
@@ -104,5 +110,28 @@ class CommentServiceTest @Autowired constructor(
         // then
         val results = commentRepository.findAll()
         assertThat(results).isEmpty()
+    }
+
+    @Test
+    @Transactional
+    fun `대댓글을 작성할 수 있다`() {
+        // given
+        val post = Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
+        postRepository.save(post)
+
+        val comment = Comment.create("처음 달린 댓글", user)
+        comment.post = post
+        commentRepository.save(comment)
+
+        val request = CommentCreateRequest(
+            postId = post.id!!,
+            content = "대댓글입니다."
+        )
+
+        // when
+        commentService.saveReComment(comment.id!!, user.id!!, request)
+
+        // then
+        assertThat(comment.children).hasSize(1)
     }
 }
