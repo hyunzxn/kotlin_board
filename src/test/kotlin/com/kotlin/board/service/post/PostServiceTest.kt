@@ -2,13 +2,17 @@ package com.kotlin.board.service.post
 
 import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.post.PostType
+import com.kotlin.board.domain.post.postlike.PostLike
 import com.kotlin.board.domain.user.Gender
 import com.kotlin.board.domain.user.User
 import com.kotlin.board.repository.post.PostRepository
+import com.kotlin.board.repository.post.postlike.PostLikeRepository
 import com.kotlin.board.repository.user.UserRepository
 import com.kotlin.board.request.post.PostCreateRequest
 import com.kotlin.board.request.post.PostUpdateRequest
 import com.kotlin.board.util.PagingUtil
+import com.kotlin.board.util.findByIdOrThrow
+import jakarta.persistence.EntityManager
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @SpringBootTest
@@ -23,6 +28,7 @@ class PostServiceTest @Autowired constructor(
     val postService: PostService,
     val postRepository: PostRepository,
     val userRepository: UserRepository,
+    val postLikeRepository: PostLikeRepository,
 ) {
 
     private lateinit var user: User
@@ -42,8 +48,9 @@ class PostServiceTest @Autowired constructor(
 
     @AfterEach
     fun tearDown() {
-        postRepository.deleteAllInBatch()
-        userRepository.deleteAllInBatch()
+        postLikeRepository.deleteAll()
+        postRepository.deleteAll()
+        userRepository.deleteAll()
     }
 
     @Test
@@ -152,5 +159,47 @@ class PostServiceTest @Autowired constructor(
         // then
         val results = postRepository.findAll()
         assertThat(results).isEmpty()
+    }
+
+    @Test
+    fun `게시글에 좋아요를 누르면 좋아요 개수가 1 증가한다`() {
+        // given
+        val post = Post.create(
+            title = "게시글 제목",
+            content = "게시글 내용",
+            type = PostType.FREE,
+            user = user
+        )
+        postRepository.save(post)
+
+        // when
+        postService.postLike(user.id!!, post.id!!)
+
+        // then
+        val result = postRepository.findByIdOrThrow(post.id!!, "존재하지 않는 게시글")
+        assertThat(result.likeCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `이미 좋아요 된 게시글 좋아요를 한 번 더 하면 좋아요가 취소된다`() {
+        // given
+        val post = Post.create(
+            title = "게시글 제목",
+            content = "게시글 내용",
+            type = PostType.FREE,
+            user = user
+        )
+        post.likeCount = 1 // 이미 좋아요가 된 post 이기 때문에 likeCount를 1로 설정
+        postRepository.save(post)
+
+        val postLike = PostLike.create(user, post)
+        postLikeRepository.save(postLike)
+
+        // when
+        postService.postLike(user.id!!, post.id!!)
+
+        // then
+        val result = postRepository.findByIdOrThrow(post.id!!, "존재하지 않는 게시글")
+        assertThat(result.likeCount).isEqualTo(0)
     }
 }
