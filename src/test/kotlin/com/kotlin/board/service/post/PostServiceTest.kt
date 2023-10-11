@@ -162,6 +162,27 @@ class PostServiceTest @Autowired constructor(
     }
 
     @Test
+    fun `게시글 제목으로 검색할 수 있다`() {
+        // given
+        val post = Post.create(
+            title = "오늘 점심은 라면이다.",
+            content = "진라면 순한맛 맛있어요~",
+            type = PostType.FREE,
+            user = user
+        )
+        postRepository.save(post)
+
+        val keyword = "라면"
+
+        // when
+        val result = postService.getBySearchKeyword(keyword)
+
+        // then
+        assertThat(result[0].title).isEqualTo("오늘 점심은 라면이다.")
+        assertThat(result[0].content).isEqualTo("진라면 순한맛 맛있어요~")
+    }
+
+    @Test
     fun `게시글에 좋아요를 누르면 좋아요 개수가 1 증가한다`() {
         // given
         val post = Post.create(
