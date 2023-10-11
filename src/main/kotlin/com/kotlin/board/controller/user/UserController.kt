@@ -6,6 +6,7 @@ import com.kotlin.board.response.user.UserResponse
 import com.kotlin.board.service.user.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -21,16 +22,15 @@ class UserController(
 
     @PreAuthorize("isAuthenticated() && hasAnyRole('MEMBER')")
     @GetMapping("/info")
-    fun getMyInfo(): ResponseEntity<UserResponse> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        return ResponseEntity.ok().body(userService.getMyInfo(userId))
+    fun getMyInfo(@AuthenticationPrincipal loginUser: CustomUser): ResponseEntity<UserResponse> {
+        return ResponseEntity.ok().body(userService.getMyInfo(loginUser.userId))
     }
 
     @PreAuthorize("isAuthenticated() && hasAnyRole('MEMBER')")
     @PutMapping("/profile")
-    fun updateInfo(@RequestBody request: UserUpdateRequest): ResponseEntity<UserResponse> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        return ResponseEntity.ok().body(userService.updateInfo(userId, request))
+    fun updateInfo(@RequestBody request: UserUpdateRequest,
+                   @AuthenticationPrincipal loginUser: CustomUser): ResponseEntity<UserResponse> {
+        return ResponseEntity.ok().body(userService.updateInfo(loginUser.userId, request))
 
     }
 }

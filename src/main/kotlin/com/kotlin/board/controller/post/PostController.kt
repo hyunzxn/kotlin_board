@@ -8,7 +8,7 @@ import com.kotlin.board.service.post.PostService
 import com.kotlin.board.util.PagingUtil
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -19,16 +19,14 @@ class PostController(
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    fun save(@RequestBody request: PostCreateRequest): ResponseEntity<Unit> {
-        val userId: Long = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        return ResponseEntity.ok().body(postService.save(request, userId))
+    fun save(@RequestBody request: PostCreateRequest, @AuthenticationPrincipal loginUser: CustomUser): ResponseEntity<Unit> {
+        return ResponseEntity.ok().body(postService.save(request, loginUser.userId))
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/likes/{postId}")
-    fun postLike(@PathVariable postId: Long): ResponseEntity<Unit> {
-        val userId: Long = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        return ResponseEntity.ok().body(postService.postLike(userId, postId))
+    fun postLike(@PathVariable postId: Long, @AuthenticationPrincipal loginUser: CustomUser): ResponseEntity<Unit> {
+        return ResponseEntity.ok().body(postService.postLike(loginUser.userId, postId))
     }
 
     @GetMapping

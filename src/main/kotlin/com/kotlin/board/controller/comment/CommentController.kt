@@ -7,6 +7,7 @@ import com.kotlin.board.service.comment.CommentService
 import com.kotlin.board.util.PagingUtil
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
@@ -18,16 +19,16 @@ class CommentController(
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    fun save(@RequestBody request: CommentCreateRequest): ResponseEntity<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        return ResponseEntity.ok().body(commentService.save(request, userId))
+    fun save(@RequestBody request: CommentCreateRequest, @AuthenticationPrincipal loginUser: CustomUser): ResponseEntity<Unit> {
+        return ResponseEntity.ok().body(commentService.save(request, loginUser.userId))
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/reply/{parentId}")
-    fun saveReComment(@RequestBody request: CommentCreateRequest, @PathVariable parentId: Long): ResponseEntity<Unit> {
-        val userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
-        return ResponseEntity.ok().body(commentService.saveReComment(parentId, userId, request))
+    fun saveReComment(@RequestBody request: CommentCreateRequest,
+                      @PathVariable parentId: Long,
+                      @AuthenticationPrincipal loginUser: CustomUser): ResponseEntity<Unit> {
+        return ResponseEntity.ok().body(commentService.saveReComment(parentId, loginUser.userId, request))
     }
 
     @GetMapping
