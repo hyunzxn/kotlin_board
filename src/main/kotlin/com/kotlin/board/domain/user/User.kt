@@ -1,5 +1,6 @@
 package com.kotlin.board.domain.user
 
+import com.kotlin.board.domain.common.TimeStamp
 import com.kotlin.board.request.user.UserUpdateRequest
 import com.kotlin.board.response.user.UserResponse
 import com.kotlin.board.util.formatDateToString
@@ -38,7 +39,7 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-) {
+) : TimeStamp() {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     val userRole: List<UserRole>? = null

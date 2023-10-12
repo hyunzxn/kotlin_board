@@ -1,6 +1,7 @@
 package com.kotlin.board.domain.post
 
 import com.kotlin.board.domain.comment.Comment
+import com.kotlin.board.domain.common.TimeStamp
 import com.kotlin.board.domain.user.User
 import com.kotlin.board.request.post.PostUpdateRequest
 import jakarta.persistence.*
@@ -25,7 +26,7 @@ class Post(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-) {
+) : TimeStamp() {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val comments: MutableList<Comment> = mutableListOf()

@@ -1,5 +1,6 @@
 package com.kotlin.board.domain.comment
 
+import com.kotlin.board.domain.common.TimeStamp
 import com.kotlin.board.domain.post.Post
 import com.kotlin.board.domain.user.User
 import jakarta.persistence.*
@@ -23,7 +24,7 @@ class Comment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-) {
+) : TimeStamp() {
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val children: MutableList<Comment> = mutableListOf()
