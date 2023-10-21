@@ -6,7 +6,7 @@ data class CommentResponse(
     val id: Long,
     val writer: String,
     val content: String,
-    val reComments: List<CommentResponse>
+    var reComments: MutableList<CommentResponse>? = null,
 ) {
 
     companion object {
@@ -14,8 +14,7 @@ data class CommentResponse(
             return CommentResponse(
                 id = comment.id!!,
                 writer = comment.user.loginId,
-                content = comment.content,
-                reComments = comment.children.map { reComment -> this.of(reComment) }
+                content = comment.content
             )
         }
     }

@@ -4,27 +4,24 @@ import com.kotlin.board.domain.comment.Comment
 import com.kotlin.board.domain.comment.QComment.comment
 import com.kotlin.board.util.PagingUtil
 import com.querydsl.jpa.impl.JPAQueryFactory
+import java.util.Collections
+import java.util.stream.Collectors
 
 class CommentRepositoryCustomImpl(
     private val queryFactory: JPAQueryFactory,
 ) : CommentRepositoryCustom {
 
-    override fun getListWithPaging(pagingUtil: PagingUtil): List<Comment> {
+    override fun findCommentsByPostId(postId: Long, pagingUtil: PagingUtil): List<Comment> {
         return queryFactory
-            .select(comment)
-            .from(comment)
+            .selectFrom(comment)
+            .leftJoin(comment.parent).fetchJoin().distinct()
             .limit(pagingUtil.size.toLong())
             .offset(pagingUtil.getOffset())
-            .orderBy(comment.id.desc())
-            .fetch()
-    }
-
-    override fun getReComments(parentCommetId: Long): List<Comment> {
-        return queryFactory
-            .select(comment)
-            .from(comment)
-            .where(comment.parent.id.eq(parentCommetId))
-            .orderBy(comment.id.desc())
+            .where(comment.post.id.eq(postId))
+            .orderBy(
+                comment.parent.id.asc().nullsFirst(),
+                comment.createdAt.asc()
+            )
             .fetch()
     }
 }

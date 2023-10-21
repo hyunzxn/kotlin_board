@@ -26,22 +26,15 @@ class Comment(
     val id: Long? = null,
 ) : TimeStamp() {
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL])
     val children: MutableList<Comment> = mutableListOf()
 
     companion object {
-        fun create(content: String = "댓글 내용", user: User): Comment {
+        fun create(content: String = "댓글 내용", user: User, parent: Comment? = null): Comment {
             return Comment(
                 content = content,
-                user = user
-            )
-        }
-
-        fun createReComment(content: String, parent: Comment, user: User): Comment {
-            return Comment(
-                content = content,
+                user = user,
                 parent = parent,
-                user = user
             )
         }
     }

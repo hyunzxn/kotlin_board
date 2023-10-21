@@ -10,14 +10,11 @@ import com.kotlin.board.repository.post.PostRepository
 import com.kotlin.board.repository.user.UserRepository
 import com.kotlin.board.request.comment.CommentCreateRequest
 import com.kotlin.board.util.PagingUtil
-import com.kotlin.board.util.findByIdOrThrow
-import jakarta.persistence.EntityManager
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -58,7 +55,7 @@ class CommentServiceTest @Autowired constructor(
         val post = Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
         postRepository.save(post)
 
-        val reqeust = CommentCreateRequest(post.id!!, "댓글 내용!")
+        val reqeust = CommentCreateRequest(post.id!!, "댓글 내용!", null)
 
         // when
         commentService.save(reqeust, user.id!!)
@@ -70,28 +67,29 @@ class CommentServiceTest @Autowired constructor(
     }
 
     @Test
-    fun `댓글을 페이징 처리하여 조회할 수 있다`() {
+    fun `대댓글을 작성할 수 있다`() {
         // given
         val post = Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
         postRepository.save(post)
 
-        val comments = mutableListOf<Comment>()
-        (1..20).map {
-            val comment = Comment.create("댓글 내용 $it", user)
-            comment.post = post
-            comments.add(comment)
-        }
-        commentRepository.saveAll(comments)
+        val comment = Comment.create("처음 달린 댓글", user)
+        comment.post = post
+        commentRepository.save(comment)
+
+        val request = CommentCreateRequest(
+            postId = post.id!!,
+            content = "대댓글입니다.",
+            parentId = comment.id
+        )
 
         val pagingUtil = PagingUtil()
 
         // when
-        val results = commentService.getList(pagingUtil)
+        commentService.save(request, user.id!!)
 
         // then
-        assertThat(results).hasSize(10)
-        assertThat(results[0].content).isEqualTo("댓글 내용 20")
-        assertThat(results[9].content).isEqualTo("댓글 내용 11")
+        val result = commentService.getComments(post.id!!, pagingUtil)
+        assertThat(result[0].reComments).isNotEmpty()
     }
 
     @Test
@@ -113,25 +111,27 @@ class CommentServiceTest @Autowired constructor(
     }
 
     @Test
-    @Transactional
-    fun `대댓글을 작성할 수 있다`() {
+    fun `댓글을 페이징 처리하여 조회할 수 있다`() {
         // given
         val post = Post.create("게시글 제목", "게시글 내용", PostType.FREE, user)
         postRepository.save(post)
 
-        val comment = Comment.create("처음 달린 댓글", user)
-        comment.post = post
-        commentRepository.save(comment)
+        val comments = mutableListOf<Comment>()
+        (1..20).map {
+            val comment = Comment.create("댓글 내용 $it", user)
+            comment.post = post
+            comments.add(comment)
+        }
+        commentRepository.saveAll(comments)
 
-        val request = CommentCreateRequest(
-            postId = post.id!!,
-            content = "대댓글입니다."
-        )
+        val pagingUtil = PagingUtil()
 
         // when
-        commentService.saveReComment(comment.id!!, user.id!!, request)
+        val results = commentService.getComments(post.id!!, pagingUtil)
 
         // then
-        assertThat(comment.children).hasSize(1)
+        assertThat(results).hasSize(10)
+        assertThat(results[0].content).isEqualTo("댓글 내용 1")
+        assertThat(results[9].content).isEqualTo("댓글 내용 10")
     }
 }
