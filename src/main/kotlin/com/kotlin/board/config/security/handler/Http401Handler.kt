@@ -23,7 +23,7 @@ class Http401Handler(
         authException: AuthenticationException?
     ) {
 
-        log.error("[인증오류] 로그인이 필요합니다", )
+        log.error("[인증오류] 로그인이 필요합니다", authException)
 
         val errorResponse = ErrorResponse(
             statusCode = 401,

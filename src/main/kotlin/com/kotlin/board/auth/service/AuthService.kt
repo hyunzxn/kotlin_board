@@ -2,6 +2,7 @@ package com.kotlin.board.auth.service
 
 import com.kotlin.board.auth.TokenInfo
 import com.kotlin.board.auth.jwt.JwtTokenProvider
+import com.kotlin.board.config.redis.RedisUtil
 import com.kotlin.board.domain.user.ROLE
 import com.kotlin.board.domain.user.User
 import com.kotlin.board.domain.user.UserRole
@@ -24,6 +25,7 @@ class AuthService(
     private val authenticationManagerBuilder: AuthenticationManagerBuilder,
     private val jwtTokenProvider: JwtTokenProvider,
     private val passwordEncoder: PasswordEncoder,
+    private val redisUtil: RedisUtil,
 ) {
 
     @Transactional
@@ -56,6 +58,12 @@ class AuthService(
         val authentication = authenticationManagerBuilder.`object`.authenticate(authenticationToken)
 
         return jwtTokenProvider.createToken(authentication)
+    }
+
+    @Transactional
+    fun logout(accessToken: String): String {
+        redisUtil.setBlackList(accessToken, "accessToken", 5)
+        return "로그아웃이 완료되었습니다."
     }
 
     private fun isLoginValidated(request: LoginRequest, user: User?): Boolean {
